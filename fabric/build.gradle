@@ -50,15 +50,9 @@ sourceSets {
 }
 
 loom {
-    runs {
-        client {
-            generateRunConfig = true
-            runDir = "../run"
-        }
-        server {
-            generateRunConfig = true
-            runDir = "../run"
-        }
+    runConfigs.configureEach {
+        runDirectory = "../run"
+        generateRunConfig = true
     }
 
     accessWidenerPath = file("src/main/resources/componentviewer-fabric.accesswidener")
