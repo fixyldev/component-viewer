@@ -19,12 +19,12 @@ public final class KeyboardHandlerMixin {
 
     @Inject(method = "keyPress(JILnet/minecraft/client/input/KeyEvent;)V", at = @At(value = "HEAD"))
     private void keyPress(long windowHandle, int action, KeyEvent keyEvent, CallbackInfo callback) {
-        if (windowHandle != Minecraft.getInstance().getWindow().handle()) {
+        if (windowHandle == 0L || windowHandle != Minecraft.getInstance().getWindow().handle()) {
             return;
         }
 
         ComponentViewer.dispatchEventSafely(dispatcher ->
-            dispatcher.invokeKeyInputEvent(keyEvent, Action.fromGlfw(action))
+            dispatcher.invokeKeyInputEvent(keyEvent, Action.fromInt(action))
         );
     }
 }

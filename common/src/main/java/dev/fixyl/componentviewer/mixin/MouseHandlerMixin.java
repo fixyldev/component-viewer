@@ -20,12 +20,12 @@ public final class MouseHandlerMixin {
 
     @Inject(method = "onButton(JLnet/minecraft/client/input/MouseButtonInfo;I)V", at = @At(value = "HEAD"))
     private void onButton(long windowHandle, MouseButtonInfo mouseButtonInfo, int action, CallbackInfo callback) {
-        if (windowHandle != Minecraft.getInstance().getWindow().handle()) {
+        if (windowHandle == 0L || windowHandle != Minecraft.getInstance().getWindow().handle()) {
             return;
         }
 
         ComponentViewer.dispatchEventSafely(dispatcher ->
-            dispatcher.invokeButtonInputEvent(mouseButtonInfo, Action.fromGlfw(action))
+            dispatcher.invokeButtonInputEvent(mouseButtonInfo, Action.fromInt(action))
         );
     }
 
