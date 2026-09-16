@@ -2,12 +2,11 @@ package dev.fixyl.componentviewer.control.component;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.Removed;
 import net.minecraft.world.item.ItemStack;
 
 import dev.fixyl.componentviewer.annotation.NullPermitted;
@@ -36,9 +35,7 @@ final class PatchedItemStackComponents extends ItemStackComponents {
     public List<DataComponentType<?>> getComponentTypes() {
         DataComponentPatch currentPatch = this.dataComponentPatch.get();
 
-        return currentPatch.entrySet()
-            .stream()
-            .<DataComponentType<?>>map(Entry::getKey)
+        return currentPatch.map.keySet().stream()
             .sorted(REGISTRY_ID_COMPARATOR)
             .sorted(Comparator.<DataComponentType<?>, Boolean>comparing(dataComponentType ->
                 PatchedItemStackComponents.wasRemovedWithPatch(currentPatch, dataComponentType)
@@ -71,22 +68,15 @@ final class PatchedItemStackComponents extends ItemStackComponents {
     // meaning each key-value-pair has a different type.
     @SuppressWarnings("unchecked")
     private static <T> @NullPermitted T getValueFromPatch(DataComponentPatch dataComponentPatch, DataComponentType<T> dataComponentType) {
-        Optional<T> value = (Optional<T>) dataComponentPatch.map.getOrDefault(
-            dataComponentType,
-            Optional.empty()
-        );
+        Object value = dataComponentPatch.map.get(dataComponentType);
 
-        return value.orElse(null);
+        return (T) Removed.removedToNull(value);
     }
 
-    // Suppress SonarQube warning for checking that an
-    // Optional may be `null`.
-    // This check has to exist so we can test for a missing,
-    // or rather present, entry in the patch map.
-    @SuppressWarnings("java:S2789")
     private static <T> boolean wasRemovedWithPatch(DataComponentPatch dataComponentPatch, DataComponentType<T> dataComponentType) {
-        Optional<?> value = dataComponentPatch.map.get(dataComponentType);
+        Object value = dataComponentPatch.map.get(dataComponentType);
 
-        return value != null && value.isEmpty();
+        return Removed.isRemoved(value);
     }
+
 }

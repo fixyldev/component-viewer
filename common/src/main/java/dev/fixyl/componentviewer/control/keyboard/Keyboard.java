@@ -1,7 +1,5 @@
 package dev.fixyl.componentviewer.control.keyboard;
 
-import static org.lwjgl.glfw.GLFW.*;
-
 import java.util.List;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -96,16 +94,17 @@ public abstract class Keyboard {
      * @param action the action of the key input
      */
     public void onKeyInput(KeyEvent keyEvent, Action action) {
+        if (action == Action.UNKNOWN) {
+            return;
+        }
+
         Key key = InputConstants.getKey(keyEvent);
         this.setDownStateForAll(key, action);
 
         if (this.shouldCaptureInput(action)) {
             this.onInput(key);
 
-            if (
-                key.getType() == Type.KEYSYM
-                && this.isCopy(keyEvent)
-            ) {
+            if (this.isCopy(keyEvent)) {
                 this.eventDispatcher.invokeCopyActionEvent();
             }
         }
@@ -119,6 +118,10 @@ public abstract class Keyboard {
      * @param action the action of the mouse button input
      */
     public void onButtonInput(MouseButtonInfo mouseButtonInfo, Action action) {
+        if (action == Action.UNKNOWN) {
+            return;
+        }
+
         Key key = Type.MOUSE.getOrCreate(mouseButtonInfo.button());
         this.setDownStateForAll(key, action);
 
@@ -171,7 +174,7 @@ public abstract class Keyboard {
     }
 
     private boolean isCopy(KeyEvent keyEvent) {
-        return keyEvent.key() == GLFW_KEY_C && (
+        return keyEvent.key() == InputConstants.KEY_C && (
             (this.alternativeCopyModifierKey.getBooleanValue())
                 ? keyEvent.hasAltDown()
                 : keyEvent.hasControlDown()
@@ -200,29 +203,29 @@ public abstract class Keyboard {
     /**
      * Represents the action of a key or button input.
      * <p>
-     * Is either {@code RELEASE}, {@code PRESS} or {@code REPEAT}.
+     * Is either {@code PRESS}, {@code RELEASE} or {@code REPEAT}.
+     * Can also be {@code UNKNOWN}.
      */
     public enum Action {
-        RELEASE,
         PRESS,
-        REPEAT;
+        RELEASE,
+        REPEAT,
+        UNKNOWN;
 
         /**
-         * Get an {@link Action} enum from a GLFW action constant.
+         * Get an {@link Action} enum from an action int.
          *
-         * @param action the GLFW action as an int
+         * @param action the action as an int
          * @return the action as an enum
          */
-        public static Action fromGlfw(int action) {
+        public static Action fromInt(final int action) {
             return switch (action) {
-                case 0 -> RELEASE;
                 case 1 -> PRESS;
-                case 2 -> REPEAT;
-                default -> throw new IllegalArgumentException(String.format(
-                    "There is no GLFW action with %s",
-                    action
-                ));
+                case 0 -> RELEASE;
+                case -1 -> REPEAT;
+                default -> UNKNOWN;
             };
         }
     }
+
 }

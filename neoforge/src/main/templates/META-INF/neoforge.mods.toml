@@ -8,7 +8,7 @@ version="${version}"
 
 displayName="Component Viewer"
 description="Component Viewer is a mod for Minecraft Java Edition that allows you to view and copy components of any item stack."
-logoFile="assets/componentviewer/icon.png"
+iconFile="assets/componentviewer/icon.png"
 
 displayURL="https://modrinth.com/mod/component-viewer"
 
@@ -20,13 +20,13 @@ config="componentviewer-common.mixins.json"
 [[dependencies.componentviewer]]
     modId="minecraft"
     type="required"
-    versionRange="[26.2,26.3)"
+    versionRange="[26.3,26.4)"
     ordering="NONE"
     side="CLIENT"
 
 [[dependencies.componentviewer]]
     modId="neoforge"
     type="required"
-    versionRange="[26.2.0.0-beta,)"
+    versionRange="[26.3.0.1-beta,)"
     ordering="NONE"
     side="CLIENT"
