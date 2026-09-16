@@ -174,7 +174,7 @@ public abstract class Keyboard {
     }
 
     private boolean isCopy(KeyEvent keyEvent) {
-        return keyEvent.key() == InputConstants.KEYCODE_C && (
+        return keyEvent.key() == InputConstants.KEY_C && (
             (this.alternativeCopyModifierKey.getBooleanValue())
                 ? keyEvent.hasAltDown()
                 : keyEvent.hasControlDown()
