@@ -94,6 +94,10 @@ public abstract class Keyboard {
      * @param action the action of the key input
      */
     public void onKeyInput(KeyEvent keyEvent, Action action) {
+        if (action == Action.UNKNOWN) {
+            return;
+        }
+
         Key key = InputConstants.getKey(keyEvent);
         this.setDownStateForAll(key, action);
 
@@ -114,6 +118,10 @@ public abstract class Keyboard {
      * @param action the action of the mouse button input
      */
     public void onButtonInput(MouseButtonInfo mouseButtonInfo, Action action) {
+        if (action == Action.UNKNOWN) {
+            return;
+        }
+
         Key key = Type.MOUSE.getOrCreate(mouseButtonInfo.button());
         this.setDownStateForAll(key, action);
 
@@ -195,12 +203,12 @@ public abstract class Keyboard {
     /**
      * Represents the action of a key or button input.
      * <p>
-     * Is either {@code RELEASE}, {@code PRESS} or {@code REPEAT}.
+     * Is either {@code PRESS}, {@code RELEASE} or {@code REPEAT}.
      * Can also be {@code UNKNOWN}.
      */
     public enum Action {
-        RELEASE,
         PRESS,
+        RELEASE,
         REPEAT,
         UNKNOWN;
 
@@ -212,9 +220,9 @@ public abstract class Keyboard {
          */
         public static Action fromInt(final int action) {
             return switch (action) {
-                case 0 -> RELEASE;
                 case 1 -> PRESS;
-                case 2 -> REPEAT;
+                case 0 -> RELEASE;
+                case -1 -> REPEAT;
                 default -> UNKNOWN;
             };
         }
